@@ -3,7 +3,7 @@ name: Build
 on:
   push:
   schedule:
-    - cron: "0 0 * * 0"
+    - cron: 0 0 * * 6,0
 
 env:
   BBR_REPO: google/bbr
@@ -19,7 +19,7 @@ jobs:
       FILE: commit
     outputs:
       commit: ${{ steps.check.outputs.commit }}
-      hit: ${{ steps.cache.outputs.cache-hit == 'true' }}
+      hit: ${{ steps.cache.outputs.cache-hit }}
     steps:
       - name: Check
         id: check
@@ -33,12 +33,12 @@ jobs:
           key: ${{ steps.check.outputs.commit }}
 
       - name: Save
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: '!steps.cache.outputs.cache-hit'
         run: echo ${{ steps.check.outputs.commit }} | tee ${{ env.FILE }}
 
   build:
     needs: check
-    if: needs.check.outputs.hit == 'false'
+    if: '!needs.check.outputs.hit'
     runs-on: ubuntu-latest
     container: ghcr.io/waterlemons2k/linux-deps:buster
     steps:
@@ -52,7 +52,7 @@ jobs:
         run: |
           curl -fLO https://github.com/${{ github.repository }}/raw/${{ github.sha }}/{certs/debian-uefi-certs.pem,configs/.config}
 
-          echo "DATE=$(date +%F)" >> "$GITHUB_ENV"
+          echo "TAG=$(make kernelversion)_$(date -I)" >> "$GITHUB_ENV"
 
       - name: Build
         run: make -j$(nproc) LOCALVERSION= bindeb-pkg
@@ -60,6 +60,6 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ env.DATE }}
+          tag_name: ${{ env.TAG }}
           body: Based on google/bbr@${{ needs.check.outputs.commit }}.
           files: ../*.deb
