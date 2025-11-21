@@ -43,7 +43,7 @@ jobs:
     container: ghcr.io/waterlemons2k/linux-deps:buster
     steps:
       - name: Checkout BBR
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: ${{ env.BBR_REPO }}
           ref: ${{ env.BBR_BRANCH }}
