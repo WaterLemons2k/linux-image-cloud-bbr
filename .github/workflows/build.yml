@@ -27,7 +27,7 @@ jobs:
 
       - name: Cache
         id: cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ env.FILE }}
           key: ${{ steps.check.outputs.commit }}
