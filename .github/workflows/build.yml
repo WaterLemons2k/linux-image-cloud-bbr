@@ -11,7 +11,7 @@ env:
 
 jobs:
   keep-schedule:
-    uses: WaterLemons2k/scheduled-workflow-activity-action/.github/workflows/reusable.yml@v1
+    uses: WaterLemons2k/scheduled-workflow-activity-action/.github/workflows/reusable.yml@v2
 
   check:
     runs-on: ubuntu-latest
